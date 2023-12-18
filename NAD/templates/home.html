@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NETWORK ANOMALY DETECTION</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .header {
+        background-color: #0e1031;
+        color: white;
+        text-align: center;
+        padding: 20px 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .container {
+        display: flex;
+        flex-grow: 1;
+        max-width: 100%; /* Set maximum width for the container */
+        overflow-x: hidden; /* Hide horizontal scrollbar if content overflows */
+      }
+
+      .menu {
+        width: 200px;
+        background-color: #151736;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .menu ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .menu ul li {
+        margin: 30px 0;
+      }
+
+      .menu ul li a {
+        text-decoration: none;
+        color: #fffefe;
+        display: block;
+        font-size: 20px;
+      }
+
+      .menu ul li a:hover {
+        color: #03040a;
+      }
+
+      .output {
+        flex-grow: 1;
+        padding: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex; /* Use flex to arrange plots side by side */
+        flex-wrap: wrap; /* Allow plots to wrap to the next line if needed */
+        justify-content: space-around; /* Distribute space between plots */
+      }
+
+      .output img {
+        max-width: 100%; /* Make sure images don't exceed their container width */
+        height: auto; /* Maintain aspect ratio */
+      }
+
+      .notification-container {
+        position: fixed;
+        top: 0; /* Adjust as needed to position the notification */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000; /* Ensure the notification appears above other elements */
+        display: flex;
+        align-items: center;
+        width: 500px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .notification-icon {
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      .success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .notification-link {
+        text-decoration: none; /* Remove underline */
+        color: inherit; /* Inherit the color from the parent element */
+      }
+    </style>
+  </head>
+
+  <body>
+    {% if notification %}
+    <div class="notification-container error {{ notification.type }}">
+      <div class="notification-icon">&#10008;</div>
+      <div class="notification-content">
+        <h2>
+          <a href="{{ url_for('notifications') }}" class="notification-link"
+            >{{ notification.title }}</a
+          >
+        </h2>
+      </div>
+    </div>
+    {% endif %}
+    <div class="header">
+      <h1>NETWORK ANOMALY DETECTION</h1>
+    </div>
+    <div class="container">
+      <div class="menu">
+        <ul>
+          <li><a href="#">MONITOR</a></li>
+          <li>
+            <a href="{{ url_for('network_details') }}">NETWORK DETAILS</a>
+          </li>
+          <li><a href="{{ url_for('reports') }}">REPORTS</a></li>
+          <li>
+            <a href="{{ url_for('notifications') }}">NOTIFICATIONS</a>
+          </li>
+        </ul>
+      </div>
+      <div class="output">
+        <h2>Anomalies Plot</h2>
+        <img
+          src="{{ url_for('static', filename=plot_filename) }}"
+          alt="Anomalies Plot"
+        />
+      </div>
+
+      <div class="output">
+        <h2>Anomalies Progress</h2>
+        <img
+          src="{{ url_for('static', filename=progress_plot_filename) }}"
+          alt="Anomalies Progress"
+        />
+      </div>
+    </div>
+  </body>
+</html>

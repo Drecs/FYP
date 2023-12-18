@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NETWORK DETAILS</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: sans-serif;
+      }
+
+      .header {
+        background-color: #0e1031;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        width: 100%;
+      }
+      .card {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px; /* Added margin between cards for better separation */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>NETWORK DETAILS</h1>
+      <!-- You can add additional header content here -->
+    </div>
+
+    <h2>Current Connected Network</h2>
+    <div class="card">
+      <p><strong>SSID:</strong> {{ current_network_details.ssid }}</p>
+      <p>
+        <strong>IP Address:</strong> {{ current_network_details.ip_address }}
+      </p>
+      <p>
+        <strong>MAC Address:</strong> {{ current_network_details.mac_address }}
+      </p>
+      <p>
+        <strong>Link Speed:</strong> {{ current_network_details.link_speed }}
+      </p>
+    </div>
+
+    <h2>Recent Connected Networks</h2>
+    {% for detail in recent_network_details %}
+    <div class="card">
+      <p><strong>SSID:</strong> {{ detail.ssid }}</p>
+      <p><strong>IP Address:</strong> {{ detail.ip_address }}</p>
+      <p><strong>MAC Address:</strong> {{ detail.mac_address }}</p>
+      <p><strong>Link Speed:</strong> {{ detail.link_speed }}</p>
+      <p><strong>Timestamp:</strong> {{ detail.timestamp }}</p>
+    </div>
+    {% endfor %}
+  </body>
+</html>

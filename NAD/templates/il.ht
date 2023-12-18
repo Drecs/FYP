@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NETWORK ANOMALY DETECTION</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .header {
+        background-color: #0e1031; /* Dark blue background color */
+        color: white; /* White text color */
+        text-align: center;
+        padding: 20px 0; /* Padding at the top and bottom of the header */
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .menu {
+        width: 200px; /* Adjust the width as needed */
+        height: 100vh; /* Full height of the viewport */
+        background-color: #151736; /* Background color for the menu */
+        float: left; /* Float the menu to the right */
+        text-align: center; /* Center-align the menu items */
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .menu ul {
+        list-style: none; /* Remove default list styling (bullets) */
+        padding: 0;
+      }
+
+      .menu ul li {
+        margin: 30px 0; /* Margin between menu items */
+      }
+
+      .menu ul li a {
+        text-decoration: none; /* Remove underline from links */
+        color: #fffefe; /* Link color */
+        display: block; /* Make the entire area of the link clickable */
+        font-size: 20px;
+      }
+
+      .menu ul li a:hover {
+        color: #03040a; /* Change link color on hover */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>NETWORK ANOMALY DETECTION</h1>
+      <!-- You can add additional header content here -->
+    </div>
+    <div class="menu">
+      <ul>
+        <li><a href="#">MONITOR</a></li>
+        <li><a href="netdet.html">NETWORK DETAILS</a></li>
+        <li><a href="reports.html">REPORTS</a></li>
+        <li><a href="notifications.html">NOTIFICATIONS</a></li>
+      </ul>
+      <div id="output">
+        Anomalies: {{ anomalies }}
+        <!-- The output will be displayed here -->
+      </div>
+    </div>
+  </body>
+</html>
+
+
+<div class="output">
+  <h2>Packets</h2>
+  <ul>
+      {% for packet in packets %}
+          <li>{{ packet }}</li>
+      {% endfor %}
+  </ul>
+  <h2>Data</h2>
+  <ul>
+      {% for item in data %}
+          <li>{{ item }}</li>
+      {% endfor %}
+  </ul>
+  <h2>Anomalies</h2>
+  <ul>
+      {% for anomaly in anomalies %}
+          <li>{{ anomaly }}</li>
+      {% endfor %}
+  </ul>
+</div>
+
+

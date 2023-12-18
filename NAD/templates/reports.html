@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REPORTS</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: sans-serif;
+      }
+
+      .header {
+        background-color: #0e1031;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        width: 100%;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 80%;
+        text-align: left;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #dddddd;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>REPORTS</h1>
+      <!-- You can add additional header content here -->
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date and Time</th>
+          <th>Source IP Address</th>
+          <th>Destination IP Address</th>
+          <th>Source Port</th>
+          <th>Destination Port</th>
+          <th>Type of Activity/Anomaly</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+        <tr>
+          <td>{{ report.date_time }}</td>
+          <td>{{ report.src_ip }}</td>
+          <td>{{ report.dst_ip }}</td>
+          <td>{{ report.src_port }}</td>
+          <td>{{ report.dst_port }}</td>
+          <td>{{ report.activity_type }}</td>
+          <td>{{ report.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
