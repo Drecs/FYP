@@ -90,4 +90,26 @@
   </ul>
 </div>
 
+<div class="notification-container success">
+  <div class="notification-icon">&#10004;</div>
+  <div class="notification-content">
+    <h2>All Systems Normal</h2>
+    <p>
+      The network is currently operating at optimal levels. All systems,
+      servers, and devices are functioning as expected, and there are no
+      signs of anomalies or security threats at this time. .
+    </p>
+  </div>
+</div>
 
+<div class="notification-container error">
+  <div class="notification-icon">&#10008;</div>
+  <div class="notification-content">
+    <h2>Network Anomaly Detected</h2>
+    <p>
+      The system has detected unusual activity on the network. The system
+      has identified a potential security breach or irregular data traffic
+      pattern. Immediate investigation and action are highly recommended.
+    </p>
+  </div>
+</div>

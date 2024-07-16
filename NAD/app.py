@@ -1,5 +1,6 @@
 from scripts.sniff import capture_packets, extract_features, detect_anomalies, generate_anomalies_plot, generate_report, generate_progress_plot
 from scripts.details import get_network_details, get_recent_network_details, save_network_details_to_db
+from scripts.givety import preprocess_data, check_attack
 from flask import Flask, render_template
 from flask import flash
 from flask import session
@@ -34,6 +35,9 @@ migrate = Migrate(app, db)
 # Load your trained Keras autoencoder model
 autoencoder_model = load_model(
     'C:/Users/Nec/Desktop/EXTRA CURR/zips/NAD/scripts/network_traffic_anomaly_model.keras')
+# Load the trained model
+model = load_model(
+    'C:/Users/Nec/Desktop/EXTRA CURR/zips/NAD/scripts/classifier_model.h5')
 
 # Import functions from your script
 
@@ -61,6 +65,7 @@ def save_notification(notification_type, notification_icon, notification_title, 
 def index():
     # Initialize notification to None
     notification = None
+    message = "The network seems to currently be working fine with no anomalies."
 
     # Capture network packets
     packets = capture_packets('Wi-Fi', 100)
@@ -80,8 +85,23 @@ def index():
     # Generate and save the circular progress plot
     progress_plot_filename = generate_progress_plot(anomalies)
 
+    # Preprocess the data
+    processed_data = preprocess_data(data)
+    # Call the function to check for attacks
+    detected_attacks = check_attack(packets)
+    print("Detected attacks:", detected_attacks)
+
+    # Define the attack messages dictionary
+    attack_messages = {
+        "normal": "Disturbance due to slow internet connection or weak signal.",
+        "probe": "There seems to be unusual packet activity in the network. Check the systems for a possible probe attack.",
+        "dos": "There seems to be a sudden influx of traffic in the network. Check the systems for a possible DoS attack.",
+        "r2l": "There seems to be unusual packet activity, especially with the IPs. Please check the systems for a possible R2L attack."
+    }
+
     # Check if anomalies are detected and save notification to the database
     if any(anomalies):
+        message = "There seems to be an anomaly in the network. Please check the reports for more details."
         # Set the time zone to UTC
         utc_timezone = pytz.timezone('Etc/GMT-2')
 
@@ -113,7 +133,8 @@ def index():
         notification = session.pop('notification', None)
 
         # Generate reports for anomalies
-        reports_data = generate_report(anomalies)
+        reports_data = generate_report(
+            anomalies, detected_attacks, attack_messages)
 
         # Save reports to the database
         for report_data in reports_data:
@@ -121,7 +142,7 @@ def index():
             db.session.add(report)
             db.session.commit()
 
-    return render_template('home.html', plot_filename=plot_filename, progress_plot_filename=progress_plot_filename, notification=notification)
+    return render_template('home.html', plot_filename=plot_filename, progress_plot_filename=progress_plot_filename, notification=notification, message=message)
 
 
 @app.route('/network_details')

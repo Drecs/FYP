@@ -17,8 +17,14 @@ def get_network_details():
 
     # Get the SSID
     if platform.system() == "Windows":
-        ssid = subprocess.check_output(["netsh", "wlan", "show", "interfaces"]).decode(
-            'utf-8').split("\n")[5].split(":")[1].strip()
+        ssid_info = subprocess.check_output(
+            ["netsh", "wlan", "show", "interfaces"]).decode('utf-8').split("\n")
+        for line in ssid_info:
+            if "SSID" in line:
+                ssid = line.split(":")[1].strip()
+                break
+        else:
+            ssid = "Unknown"
     elif platform.system() == "Linux":
         ssid = subprocess.check_output(
             ["iwgetid", "-r"]).decode('utf-8').strip()
@@ -62,12 +68,18 @@ def get_network_details():
 
 
 def save_network_details_to_db(network_details):
+    timestamp = datetime.utcnow()
+    target_timezone = pytz.timezone('Etc/GMT-2')
+    timestamp = timestamp.replace(tzinfo=pytz.utc).astimezone(target_timezone)
+
     details = NetworkDetails(
         ssid=network_details['ssid'],
         ip_address=network_details['ip_address'],
         mac_address=network_details['mac_address'],
-        link_speed=network_details.get('link_speed', None)
+        link_speed=network_details.get('link_speed', None),
+        timestamp=timestamp
     )
+
     db.session.add(details)
     db.session.commit()
 
@@ -86,5 +98,5 @@ def get_recent_network_details(limit=5):
         'ip_address': detail.ip_address,
         'mac_address': detail.mac_address,
         'link_speed': detail.link_speed,
-        'timestamp': detail.timestamp.astimezone(target_timezone).strftime('%Y-%m-%d %H:%M:%S')
+        'timestamp': detail.timestamp.astimezone(target_timezone).strftime('%d-%m-%Y %H:%M:%S')
     } for detail in recent_details]

@@ -10,8 +10,7 @@ class Notification(db.Model):
     icon = db.Column(db.String(10))  # Notification icon (e.g., '&#10008;')
     title = db.Column(db.String(255))  # Notification title
     content = db.Column(db.Text)  # Notification content
-    # Timestamp for notification creation
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow) # Timestamp for notification creation
 
 
 class Report(db.Model):

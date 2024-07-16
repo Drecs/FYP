@@ -116,12 +116,19 @@ def generate_anomalies_plot(anomalies, reconstruction_errors):
     return plot_filename
 
 
-def generate_report(anomalies):
+def generate_report(anomalies, detected_attacks, attack_messages):
     indices = np.where(anomalies)[0]
-
     reports = []
-
     for idx in indices:
+        # Convert attack types to strings as needed
+        attack_type = str(detected_attacks[idx])
+
+        # Determine the description based on the detected attack type
+        if attack_type in attack_messages:
+            description = attack_messages[attack_type]
+        else:
+            description = "There seems to be be a mere disturbance in the network due to slow internet connection, which may lead to issues like packet loss"  # Default message
+
         # Extract relevant information from the anomalous packet
         date_time = datetime.now()
         src_ip = packets[idx].src
@@ -129,7 +136,6 @@ def generate_report(anomalies):
         src_port = packets[idx].sport
         dst_port = packets[idx].dport
         activity_type = "Anomaly"  # You can customize this based on your needs
-        description = "Anomalous network activity detected."
 
         # Append the report to the list
         report = {

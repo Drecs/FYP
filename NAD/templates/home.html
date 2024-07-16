@@ -24,8 +24,9 @@
       .container {
         display: flex;
         flex-grow: 1;
-        max-width: 100%; /* Set maximum width for the container */
-        overflow-x: hidden; /* Hide horizontal scrollbar if content overflows */
+        max-width: 100%;
+        overflow-x: hidden;
+        position: relative;
       }
 
       .menu {
@@ -59,22 +60,42 @@
         flex-grow: 1;
         padding: 20px;
         font-family: Arial, Helvetica, sans-serif;
-        display: flex; /* Use flex to arrange plots side by side */
-        flex-wrap: wrap; /* Allow plots to wrap to the next line if needed */
-        justify-content: space-around; /* Distribute space between plots */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
       }
 
       .output img {
-        max-width: 100%; /* Make sure images don't exceed their container width */
-        height: auto; /* Maintain aspect ratio */
+        max-width: 100%;
+        height: auto;
+      }
+
+      .legend-item {
+        display: inline-block;
+        margin-right: 20px;
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+
+      .normal {
+        background-color: blue;
+      }
+
+      .anomalous {
+        background-color: red;
       }
 
       .notification-container {
         position: fixed;
-        top: 0; /* Adjust as needed to position the notification */
+        top: 0;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 1000; /* Ensure the notification appears above other elements */
+        z-index: 10001;
         display: flex;
         align-items: center;
         width: 500px;
@@ -105,13 +126,47 @@
       }
 
       .notification-link {
-        text-decoration: none; /* Remove underline */
-        color: inherit; /* Inherit the color from the parent element */
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .hide-overflow {
+        overflow: hidden;
+      }
+
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .header,
+      .menu {
+        z-index: 10000;
+      }
+
+      #loading img {
+        width: 100%;
+        height: 100%;
       }
     </style>
   </head>
 
   <body>
+    <!-- Loading animation -->
+    <div id="loading">
+      <img
+        src="{{ url_for('static', filename='loading.gif') }}"
+        alt="Loading..."
+      />
+    </div>
     {% if notification %}
     <div class="notification-container error {{ notification.type }}">
       <div class="notification-icon">&#10008;</div>
@@ -130,7 +185,7 @@
     <div class="container">
       <div class="menu">
         <ul>
-          <li><a href="#">MONITOR</a></li>
+          <li><a href="#" id="monitor-link">MONITOR</a></li>
           <li>
             <a href="{{ url_for('network_details') }}">NETWORK DETAILS</a>
           </li>
@@ -141,20 +196,99 @@
         </ul>
       </div>
       <div class="output">
-        <h2>Anomalies Plot</h2>
+        <h2>Packet Distribution</h2>
         <img
           src="{{ url_for('static', filename=plot_filename) }}"
           alt="Anomalies Plot"
         />
+        <div class="key">
+          <div class="legend-item">
+            <div class="legend-dot normal"></div>
+            <span class="legend-text">Normal Packet</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot anomalous"></div>
+            <span class="legend-text">Anomalous Packet</span>
+          </div>
+        </div>
       </div>
 
       <div class="output">
-        <h2>Anomalies Progress</h2>
+        <h2>Percentage of Anomalies</h2>
         <img
           src="{{ url_for('static', filename=progress_plot_filename) }}"
           alt="Anomalies Progress"
         />
       </div>
+      <div class="output">
+        <h2>Network Analysis</h2>
+        <p>{{ message }}</p>
+      </div>
     </div>
+    <script>
+      // Function to show loading animation
+      function showLoadingAnimation() {
+        var loadingDiv = document.getElementById("loading");
+        loadingDiv.style.display = "flex";
+      }
+
+      // Function to hide loading animation
+      function hideLoadingAnimation() {
+        var loadingDiv = document.getElementById("loading");
+        loadingDiv.style.display = "none";
+      }
+
+      // Function to set monitor page as loaded
+      function setMonitorPageLoaded() {
+        sessionStorage.setItem("monitorPageLoaded", "true");
+      }
+
+      // Function to check if monitor page is loaded
+      function isMonitorPageLoaded() {
+        return sessionStorage.getItem("monitorPageLoaded") === "true";
+      }
+
+      // Monitor link click event
+      document
+        .getElementById("monitor-link")
+        .addEventListener("click", function () {
+          if (!isMonitorPageLoaded()) {
+            showLoadingAnimation();
+          }
+        });
+
+      // Check if monitor page is being loaded for the first time
+      if (!isMonitorPageLoaded()) {
+        showLoadingAnimation();
+        setMonitorPageLoaded();
+      } else {
+        hideLoadingAnimation();
+      }
+
+      // Hide loading animation when the page is fully loaded
+      window.addEventListener("load", function () {
+        hideLoadingAnimation();
+      });
+
+      // Handle page hide to determine navigation
+      window.addEventListener("pagehide", function () {
+        if (isMonitorPageLoaded()) {
+          hideLoadingAnimation();
+        }
+      });
+
+      // Prevent loading animation when using the back button
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+          // Page loaded from cache
+          hideLoadingAnimation();
+        }
+      });
+
+      // Show loading animation when the page is being refreshed or unloaded
+      window.addEventListener("beforeunload", function () {
+        showLoadingAnimation();
+      });
+    </script>
   </body>
 </html>

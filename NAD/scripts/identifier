@@ -1,0 +1,77 @@
+import tensorflow as tf
+from tensorflow.keras.layers import Input, Dense, Concatenate
+from tensorflow.keras.models import Model
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder, OneHotEncoder
+import numpy as np
+import pandas as pd
+
+class MultiAnomalyDetector:
+    def __init__(self, input_dim, encoding_dim, num_classes):
+        # Initialization code here
+
+    def compile(self):
+        pass  # Placeholder for an empty method
+
+    def train(self, features, labels, epochs, batch_size):
+        # Your implementation for the train method
+
+if __name__ == "__main__":
+    # Load your training dataset into a Pandas DataFrame
+    train_dataset = pd.read_csv('C:/Users/Nec/Desktop/EXTRA CURR/zips/NAD/scripts/Train_data.csv')
+
+    # Load your testing dataset into a Pandas DataFrame
+    test_dataset = pd.read_csv('C:/Users/Nec/Desktop/EXTRA CURR/zips/NAD/scripts/test_data.csv')
+
+    # Extract features and labels for training dataset
+    train_features = train_dataset.drop(columns=['xAttack'])
+    train_labels = train_dataset['xAttack']
+
+    # Extract features and labels for testing dataset
+    test_features = test_dataset.drop(columns=['xAttack'])
+    test_labels = test_dataset['xAttack']
+
+    # Separate numerical and categorical features
+    numerical_features = train_features.select_dtypes(include=[np.number])
+    categorical_features = train_features.select_dtypes(include=[np.object])
+
+    # Encode labels to integers
+    label_encoder = LabelEncoder()
+    encoded_train_labels = label_encoder.fit_transform(train_labels)
+    encoded_test_labels = label_encoder.transform(test_labels)
+
+    # Normalize numerical features using Min-Max scaling
+    scaler = MinMaxScaler()
+    scaled_numerical_features = scaler.fit_transform(numerical_features)
+
+    # One-hot encode categorical features
+    one_hot_encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    encoded_categorical_features = one_hot_encoder.fit_transform(categorical_features)
+
+    # Concatenate scaled numerical and one-hot encoded categorical features
+    scaled_train_features = np.hstack((scaled_numerical_features, encoded_categorical_features))
+
+    # Input dimensions based on your features
+    input_dim = scaled_train_features.shape[1]
+
+    # Example encoding dimension and number of classes
+    encoding_dim = 32
+    num_classes = len(np.unique(encoded_train_labels))
+
+    # Create an instance of the MultiAnomalyDetector class
+    multi_anomaly_detector = MultiAnomalyDetector(input_dim, encoding_dim, num_classes)
+
+    # Compile and train the model using the training data
+    multi_anomaly_detector.compile()
+    multi_anomaly_detector.train(scaled_train_features, encoded_train_labels, epochs=100, batch_size=32)
+
+    # After training the model
+    multi_anomaly_detector.model.save('multi_anomaly_model.keras')
+    print("Model saved successfully.")
+
+    # Evaluate the model on the test set (optional)
+    scaled_test_numerical_features = scaler.transform(test_features.select_dtypes(include=[np.number]))
+    encoded_test_categorical_features = one_hot_encoder.transform(test_features.select_dtypes(include=[np.object]))
+    scaled_test_features = np.hstack((scaled_test_numerical_features, encoded_test_categorical_features))
+    evaluation = multi_anomaly_detector.model.evaluate(scaled_test_features, encoded_test_labels)
+    print("Evaluation Loss:", evaluation)
+
